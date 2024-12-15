@@ -15,6 +15,7 @@ class AppRoutes {
       '/listclass': (context) => const ListClassView(),
       '/classdetail': (context) => const ClassDetailView(),
       '/class-list-student': (context) => const ClassListStudentView(),
+      '/class_details': (context) => const ClassDetailPage()
     };
   }
 }

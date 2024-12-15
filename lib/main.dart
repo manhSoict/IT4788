@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'ALL HUST',
       theme: ThemeData(primarySwatch: Colors.blue),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: '/class_details',
       routes: AppRoutes.getRoutes(),
     );
   }

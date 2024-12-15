@@ -45,4 +45,5 @@ class User {
       classList: classList,
     );
   }
+
 }

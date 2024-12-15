@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:it_4788/src/services/class_service.dart';
+import 'package:it_4788/src/services/absence_service.dart'; // Import the absence service
 import 'package:it_4788/src/ui/components/footer.dart';
 import 'package:it_4788/src/ui/components/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../ui/components/card/RequestCard.dart';
 
 class ClassListStudentView extends StatefulWidget {
   const ClassListStudentView({Key? key}) : super(key: key);
@@ -11,18 +15,22 @@ class ClassListStudentView extends StatefulWidget {
 }
 
 class _ClassListStudentViewState extends State<ClassListStudentView> {
+  String? role_name;
   String? role;
   String? name;
-  String? studentId;
+  String? id;
+  String? token;
   int currentIndex = 0;
   bool _isStudentListActive = true;
-  TextEditingController _searchController = TextEditingController();
-  List<String> _students = [
-    "Trương Thùy Trang",
-    "Nguyễn Đức Mạnh",
-    "Phan Anh Tuấn",
-    "Nguyễn Thị Lan"
-  ];
+  bool _isAttendanceActive = false;
+  bool _isNotificationActive = false;
+  Map<String, String> _students = {};
+  List<bool> _attendanceStatus = [];
+  DateTime _selectedDate = DateTime.now();
+  String classId = '000087';
+  List<String> _notes = ["", "", "", ""];
+  final ClassService _classService = ClassService();
+  final AbsenceService _absenceService = AbsenceService();
 
   @override
   void initState() {
@@ -32,17 +40,71 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    Set<String> keys = prefs.getKeys();
+
+    // Print all keys and their values
+    for (var key in keys) {
+      print('$key: ${prefs.get(key)}');
+    }
     setState(() {
-      role = (prefs.getString('role') == "STUDENT") ? 'Sinh viên' : 'Giảng viên';
+      role_name = (prefs.getString('role') == "STUDENT") ? 'Sinh viên' : 'Giảng viên';
+      token = prefs.getString('token');
+      role = prefs.getString('role');
       name = prefs.getString('name');
-      studentId = prefs.getString('studentId');
+      id = prefs.getString('id');
     });
-    print(name);
+
+    // Now make the API call
+    if (role != null && id != null) {
+      Map<String, String> studentsMap = await _classService.getStudentsOfClass(
+        token: token!,
+        role: role!,
+        accountId: id!,
+        classId: classId,
+      );
+      setState(() {
+        _students = studentsMap; // Update _students with the fetched map
+        _attendanceStatus = List<bool>.filled(_students.length, false);
+      });
+    }
   }
 
-  void _toggleView(bool isStudentListActive) {
+  void _toggleView(int index) {
     setState(() {
-      _isStudentListActive = isStudentListActive;
+      _isStudentListActive = index == 0;
+      _isAttendanceActive = index == 1;
+      _isNotificationActive = index == 2;
+    });
+  }
+
+  void _selectDate() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
+
+  void _saveAttendance() {
+    print("Attendance submitted for the date: $_selectedDate");
+  }
+
+  void _filterStudents(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        // Reset to all students if query is empty
+      } else {
+        _students = Map.fromEntries(
+            _students.entries.where((entry) =>
+                entry.value.toLowerCase().contains(query.toLowerCase()))
+        );
+      }
     });
   }
 
@@ -50,15 +112,176 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
     return ListView.builder(
       itemCount: _students.length,
       itemBuilder: (context, index) {
+        String studentId = _students.keys.elementAt(index);
+        String studentName = _students[studentId]!;
+
         return ListTile(
-          title: Text(_students[index]),
+          leading: const CircleAvatar(
+            radius: 18,
+            backgroundColor: Colors.grey,
+            child: Icon(Icons.circle_outlined, color: Color(0xFFFF5E5E), size: 20),
+          ),
+          title: Row(
+            children: [
+              Text(
+                studentName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                studentId,
+                style: const TextStyle(fontWeight: FontWeight.normal, color: Color(0xFFFF5E5E)),
+              ),
+            ],
+          ),
+          trailing: const Text(
+            'Vắng: 10',
+            style: TextStyle(color: Color(0xFFFF5E5E)),
+          ),
         );
       },
     );
   }
 
   Widget _buildAttendanceView() {
-    return Center(child: Text('Attendance View'));
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              const Text(
+                'Chọn ngày: ',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF5E5E)
+                ),
+                onPressed: _selectDate,
+                child: Text(
+                  "${_selectedDate.toLocal()}".split(' ')[0],
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _students.length,
+            itemBuilder: (context, index) {
+              String studentId = _students.keys.elementAt(index);
+              String studentName = _students[studentId]!;
+
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        studentName,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Checkbox(
+                      value: _attendanceStatus[index],
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _attendanceStatus[index] = value ?? false;
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: TextField(
+                        onChanged: (note) {
+                          setState(() {
+                            _notes[index] = note;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Ghi chú',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5E5E)),
+            onPressed: _saveAttendance,
+            child: const Text(
+              'Nộp',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNotificationView() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              const Text(
+                'Chọn ngày: ',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5E5E)),
+                onPressed: _selectDate,
+                child: Text(
+                  "${_selectedDate.toLocal()}".split(' ')[0],
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+        FutureBuilder<List<Map<String, String>>>(
+          future: _absenceService.fetchAbsenceRequests(
+            token: token!,  // Ensure the token is available
+            classId: '000087',  // Replace with your class ID
+            status: null,  // Replace with the appropriate status, if needed
+            date: _selectedDate.toString().split(' ')[0],  // Convert DateTime to string (YYYY-MM-DD format)
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No notifications found.'));
+            } else {
+              List<Map<String, String>> notifications = snapshot.data!;
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  var notification = notifications[index];
+                  return RequestCard(
+                    date: notification['date'] ?? 'Unknown Date',  // Safely extract the 'date' field
+                    sender: notification['sender'] ?? 'Unknown Sender',  // Safely extract the 'sender' field
+                  );
+                },
+              );
+            }
+          },
+        ),
+      ],
+    );
   }
 
   @override
@@ -67,15 +290,10 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
-        child: Header(
-          role: role,
-          name: name,
-          studentId: studentId,
-        ),
+        child: Header(role: role_name, name: name),
       ),
       body: Column(
         children: [
-          // Class Information Display
           Container(
             margin: const EdgeInsets.all(10),
             padding: const EdgeInsets.all(10),
@@ -105,7 +323,6 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
               ],
             ),
           ),
-          // Toggle Buttons for "Danh sách sinh viên" and "Điểm danh"
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -124,10 +341,14 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // "Danh sách sinh viên" Button
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => _toggleView(true),
+                    onPressed: () => {
+                      _isStudentListActive = true,
+                      _isNotificationActive = false,
+                      _isAttendanceActive = false,
+                      _toggleView(0)
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _isStudentListActive
                           ? const Color(0xFFFF5E5E)
@@ -144,19 +365,47 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                // "Điểm danh" Button
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => _toggleView(false),
+                    onPressed: () => {
+                      _isStudentListActive = false,
+                      _isNotificationActive = false,
+                      _isAttendanceActive = true,
+                      _toggleView(1)
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: !_isStudentListActive
+                      backgroundColor: !_isAttendanceActive
                           ? const Color(0xFFFF5E5E)
                           : Colors.grey[300],
                     ),
                     child: Text(
                       'Điểm danh',
                       style: TextStyle(
-                        color: !_isStudentListActive
+                        color: !_isAttendanceActive
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => {
+                      _isStudentListActive = false,
+                      _isNotificationActive = true,
+                      _isAttendanceActive = false,
+                      _toggleView(2)
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: !_isNotificationActive
+                          ? const Color(0xFFFF5E5E)
+                          : Colors.grey[300],
+                    ),
+                    child: Text(
+                      'Thông báo',
+                      style: TextStyle(
+                        color: !_isNotificationActive
                             ? Colors.white
                             : Colors.black,
                       ),
@@ -166,36 +415,16 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (query) {
-                setState(() {
-                  // Filter student list based on search query
-                  _students = _students.where((student) {
-                    return student.toLowerCase().contains(query.toLowerCase());
-                  }).toList();
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Tìm kiếm sinh viên',
-                border: OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.search),
-              ),
-            ),
-          ),
-          // Dynamic Content for Attendance View
           Expanded(
-            child: !_isStudentListActive ? _buildAttendanceView() : _buildStudentList(),
+            child: _isNotificationActive
+                ? _buildNotificationView()
+                : _isAttendanceActive
+                ? _buildAttendanceView()
+                : _buildStudentList(),
           ),
         ],
       ),
-      bottomNavigationBar: Footer(
-        currentIndex: currentIndex,
-      ),
+      bottomNavigationBar: Footer(currentIndex: currentIndex),
     );
   }
 }

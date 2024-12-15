@@ -74,6 +74,10 @@ flutter:
     - assets/icons/tool.png
     - assets/icons/form.png
     - assets/images/HUST.png
+    - assets/icons/enrollment.png
+    - assets/icons/absent.png
+    - assets/icons/people.png
+    - assets/icons/material.png
  
 
   # An image asset can refer to one or more resolution-specific "variants", see

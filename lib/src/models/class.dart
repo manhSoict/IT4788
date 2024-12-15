@@ -1,8 +1,9 @@
 class Class {
   final String classId;
   final String className;
-  final String? attachedCode;  // Có thể null
+  final String? attachedCode; // Có thể null
   final String classType;
+  final String lecturerId;
   final String lecturerName;
   final String studentCount;
   final String startDate;
@@ -12,8 +13,9 @@ class Class {
   Class({
     required this.classId,
     required this.className,
-    this.attachedCode,  // Có thể null
+    this.attachedCode, // Có thể null
     required this.classType,
+    required this.lecturerId,
     required this.lecturerName,
     required this.studentCount,
     required this.startDate,
@@ -25,9 +27,10 @@ class Class {
     return Class(
       classId: json['class_id'],
       className: json['class_name'],
-      attachedCode: json['attached_code'],  // Có thể null
+      attachedCode: json['attached_code'], // Có thể null
       classType: json['class_type'],
       lecturerName: json['lecturer_name'],
+      lecturerId: json['lecturer_account_id'],
       studentCount: json['student_count'],
       startDate: json['start_date'],
       endDate: json['end_date'],

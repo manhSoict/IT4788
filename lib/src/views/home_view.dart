@@ -42,22 +42,28 @@ class _HomeViewState extends State<HomeView> {
 
   final List<Map<String, String>> menuItems = [
     {
-      'title': 'Thời khóa biểu',
-      'subtitle': 'Tra cứu thời khóa biểu, lịch thi',
-      'icon': 'assets/icons/calendar.png',
+      'title': 'Danh sách lớp',
+      'subtitle': 'Danh sách lớp sinh viên trong học kì',
+      'icon': 'assets/icons/class.png',
       'route': '/listclass',
     },
     {
-      'title': 'Đồ án',
-      'subtitle': 'Thông tin các đồ án',
+      'title': 'Bài tập',
+      'subtitle': 'Bài tập của sinh viên',
       'icon': 'assets/icons/project.png',
       'route': '/project',
     },
     {
-      'title': 'Thông báo tin tức',
-      'subtitle': 'Các thông báo quan trọng',
-      'icon': 'assets/icons/news.png',
+      'title': 'Đăng kí lớp',
+      'subtitle': 'Đăng kí vào lớp có trong học kì',
+      'icon': 'assets/icons/enrollment.png',
       'route': '/news',
+    },
+    {
+      'title': 'Xin phép nghỉ học',
+      'subtitle': 'Xin phép nghỉ học onlie',
+      'icon': 'assets/icons/absent.png',
+      'route': '/class',
     },
     {
       'title': 'Kết quả học tập',
@@ -66,22 +72,10 @@ class _HomeViewState extends State<HomeView> {
       'route': '/result',
     },
     {
-      'title': 'Lớp sinh viên',
-      'subtitle': 'Thông tin về lớp của sv',
-      'icon': 'assets/icons/class.png',
-      'route': '/class',
-    },
-    {
       'title': 'Tiện ích',
       'subtitle': 'Sổ tay sinh viên, bản đồ',
       'icon': 'assets/icons/tool.png',
       'route': '/utilities',
-    },
-    {
-      'title': 'Biểu mẫu online',
-      'subtitle': 'Bảng điểm, chứng nhận sv...',
-      'icon': 'assets/icons/form.png',
-      'route': '/forms',
     },
     {
       'title': 'Học phí',

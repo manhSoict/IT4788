@@ -3,6 +3,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:it_4788/src/ui/components/footer.dart';
 import 'package:it_4788/src/ui/components/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../ui/components/header2.dart';
 import '../ui/widgets/class_card.dart';
 import '../services/listclass_service.dart';
 import 'dart:math'; // For random times
@@ -116,28 +117,34 @@ class _ListClassViewState extends State<ListClassView> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
-        child: Header(
-          role: role == 'STUDENT' ? 'Sinh viên' : 'Giảng viên',
-          name: name,
-          studentId: studentId,
-          title: currentIndex == 2 ? 'Thông tin chi tiết lớp' : null,
-          onBack: currentIndex == 2
-              ? () {
-                  setState(() {
-                    currentIndex = 0;
-                  });
-                }
-              : null,
-        ),
-      ),
+          preferredSize: const Size.fromHeight(80),
+          child: Header2(title: "Danh sách lớp")),
       body: classCards.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: classCards.length,
-              itemBuilder: (context, index) {
-                return classCards[index];
-              },
+          : Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start, // Căn Text về bên trái
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0), // Thêm padding xung quanh Text
+                  child: Text(
+                    'Kì 20241',
+                    style: TextStyle(
+                      fontSize: 25, // Kích thước chữ
+                      fontWeight: FontWeight.bold, // Chữ in đậm
+                    ),
+                  ),
+                ),
+                Expanded(
+                  // Đảm bảo ListView.builder có đủ không gian
+                  child: ListView.builder(
+                    itemCount: classCards.length,
+                    itemBuilder: (context, index) {
+                      return classCards[index];
+                    },
+                  ),
+                ),
+              ],
             ),
       bottomNavigationBar: Footer(
         currentIndex: currentIndex,

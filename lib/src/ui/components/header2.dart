@@ -15,7 +15,7 @@ class Header2 extends StatelessWidget {
           const SizedBox(height: 38),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).pop(); // Quay lại trang trước
+              Navigator.of(context).pop();
             },
             child: const Icon(
               Icons.arrow_back, // Icon mũi tên quay lại

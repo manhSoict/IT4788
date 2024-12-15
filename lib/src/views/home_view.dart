@@ -15,6 +15,7 @@ class _HomeViewState extends State<HomeView> {
   String? name;
   String? studentId;
   int currentIndex = 0;
+  List? menuItems;
 
   @override
   void initState() {
@@ -25,11 +26,10 @@ class _HomeViewState extends State<HomeView> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      role = (prefs.getString('role') == "STUDENT")
-          ? 'Sinh viên'
-          : 'Giảng viên'; // Ví dụ: Sinh viên/Giảng viên
+      role = prefs.getString('role');
       name = prefs.getString('name');
       studentId = prefs.getString('studentId');
+      menuItems = role == "STUDENT" ? menuItemsStudent : menuItemsLecturer;
     });
     print(name);
   }
@@ -40,7 +40,7 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  final List<Map<String, String>> menuItems = [
+  final List<Map<String, String>> menuItemsStudent = [
     {
       'title': 'Danh sách lớp',
       'subtitle': 'Danh sách lớp sinh viên trong học kì',
@@ -84,6 +84,26 @@ class _HomeViewState extends State<HomeView> {
       'route': '/tuition',
     },
   ];
+  final List<Map<String, String>> menuItemsLecturer = [
+    {
+      'title': 'Danh sách lớp',
+      'subtitle': 'Danh sách lớp sinh viên trong học kì',
+      'icon': 'assets/icons/class.png',
+      'route': '/listclass',
+    },
+    {
+      'title': 'Tạo lớp',
+      'subtitle': 'Đăng kí vào lớp có trong học kì',
+      'icon': 'assets/icons/enrollment.png',
+      'route': '/news',
+    },
+    {
+      'title': 'Tiện ích',
+      'subtitle': 'Sổ tay sinh viên, bản đồ',
+      'icon': 'assets/icons/tool.png',
+      'route': '/utilities',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +112,10 @@ class _HomeViewState extends State<HomeView> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: Header(
-          role: role,
+          role: role == "STUDENT" ? 'Sinh viên' : 'Giảng viên',
           name: name,
           studentId: studentId,
-          title: currentIndex == 2 ? 'Thông tin chi tiết lớp' : null,
+          title: currentIndex > 2 ? 'Thông tin chi tiết lớp' : null,
           onBack: currentIndex == 2
               ? () {
                   setState(() {
@@ -114,12 +134,13 @@ class _HomeViewState extends State<HomeView> {
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
-          itemCount: menuItems.length,
+          itemCount: menuItems?.length,
           itemBuilder: (context, index) {
-            final item = menuItems[index];
+            final item = menuItems?[index];
             return GestureDetector(
               onTap: () {
-                Navigator.pushReplacementNamed(context, item['route']!);
+                Navigator.pushNamed(context, item['route']!);
+                //Navigator.pushReplacementNamed(context, item['route']!);
               },
               child: Container(
                 decoration: BoxDecoration(

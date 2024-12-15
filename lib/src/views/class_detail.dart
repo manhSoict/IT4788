@@ -19,11 +19,6 @@ class _ClassDetailPageState extends State<ClassDetailPage> {
   List<bool> _attendanceStatus = [false, false, false]; // Track attendance status of students
   List<String> _notes = ['', '', '']; // Track notes for students
 
-  void _onTabSelected(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   void _toggleView(bool isStudentList) {
     setState(() {
@@ -187,7 +182,6 @@ class _ClassDetailPageState extends State<ClassDetailPage> {
       ),
       bottomNavigationBar: Footer(
         currentIndex: _currentIndex,
-        onTabSelected: _onTabSelected,
       ),
     );
   }

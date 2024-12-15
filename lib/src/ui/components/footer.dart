@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 
 class Footer extends StatelessWidget {
   final int currentIndex;
-  final Function(int) onTabSelected;
 
   const Footer({
     super.key,
     required this.currentIndex,
-    required this.onTabSelected,
   });
 
   @override

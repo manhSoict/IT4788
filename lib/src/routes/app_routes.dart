@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:it_4788/src/views/class_detail.dart';
 import '../views/login_view.dart';
 import '../views/home_view.dart';
 import '../views/setting_view.dart';

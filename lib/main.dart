@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Login App',
+      title: 'ALL HUST',
       theme: ThemeData(primarySwatch: Colors.blue),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
@@ -19,3 +19,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

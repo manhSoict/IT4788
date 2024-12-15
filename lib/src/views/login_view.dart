@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
-import '../ui/components/custom_text_field.dart';
+import '../ui/components/input/signup_input.dart';
+import '../ui/components/selectbox/RoleDropdown.dart';
 import '../ui/widgets/login_button.dart';
+import '../ui/components/input/custom_input.dart';
+import '../ui/components/button/custom_button.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -17,6 +20,7 @@ class _LoginViewState extends State<LoginView>
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   late TabController _tabController;
+  bool obscurePassword = true;
 
   @override
   void initState() {
@@ -81,7 +85,7 @@ class _LoginViewState extends State<LoginView>
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'QUẢN LÝ ĐÀO TẠO',
+                  'Welcome to AllHUST',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
@@ -109,7 +113,7 @@ class _LoginViewState extends State<LoginView>
                   // Login Tab
                   _buildLoginTab(),
                   // Register Tab (empty for now)
-                  const Center(child: Text("Đăng ký")),
+                  _buildSignUpTab(),
                 ],
               ),
             ),
@@ -125,22 +129,26 @@ class _LoginViewState extends State<LoginView>
       child: Column(
         children: [
           // Email Field
-          CustomTextField(
+          CustomInput(
             controller: _emailController,
-            labelText: 'Gmail',
-            labelStyle: const TextStyle(color: Colors.white),
-            fillColor: Colors.white,
-            filled: true,
+            hintText: 'Email hoặc mã số SV/CB',
+            leftIcon: Icons.person,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 15),
+
           // Password Field
-          CustomTextField(
+          CustomInput(
             controller: _passwordController,
-            labelText: 'Mật khẩu',
-            labelStyle: const TextStyle(color: Colors.white),
-            fillColor: Colors.white,
-            filled: true,
-            isPassword: true,
+            hintText: 'Mật khẩu',
+            leftIcon: Icons.lock,
+            rightIcon:
+                obscurePassword ? Icons.visibility_off : Icons.visibility,
+            obscureText: obscurePassword,
+            onRightIconPressed: () {
+              setState(() {
+                obscurePassword = !obscurePassword;
+              });
+            },
           ),
           const SizedBox(height: 32),
           // Login Button
@@ -151,6 +159,76 @@ class _LoginViewState extends State<LoginView>
             textColor: const Color(0xFFFF5E5E),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSignUpTab() {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFF5E5E),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: SignupInput(
+                        labelText: 'Họ',
+                        icon: null,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: SignupInput(
+                        labelText: 'Tên',
+                        icon: null,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15),
+                SignupInput(
+                  labelText: 'Email',
+                  icon: Icons.email,
+                ),
+                SizedBox(height: 15),
+                SignupInput(
+                  labelText: 'Password',
+                  icon: Icons.lock,
+                  isPassword: true,
+                ),
+                SizedBox(height: 15),
+                RoleDropdown(),
+                SizedBox(height: 30),
+                // Sign Up Button
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 100),
+                  ),
+                  child: Text(
+                    'SIGN UP',
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Login Text
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -39,6 +39,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^1.2.2
   shared_preferences: ^2.3.3
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,16 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/icons/tuition.png
+    - assets/icons/calendar.png
+    - assets/icons/project.png
+    - assets/icons/news.png
+    - assets/icons/result.png
+    - assets/icons/class.png
+    - assets/icons/tool.png
+    - assets/icons/form.png
+    - assets/images/HUST.png
+ 
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

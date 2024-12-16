@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:it_4788/src/services/class_service.dart';
 import 'package:it_4788/src/ui/components/footer.dart';
-import 'package:it_4788/src/ui/components/header.dart';
+import 'package:it_4788/src/ui/components/header2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../ui/components/header2.dart';
+import '../ui/components/class_info_text.dart';
 
 class ClassListStudentView extends StatefulWidget {
   const ClassListStudentView({Key? key}) : super(key: key);
@@ -19,14 +19,16 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
   String? name;
   String? id;
   String? token;
+  String? classId;
+  String? className;
+
   int currentIndex = 0;
   bool _isStudentListActive = true;
   TextEditingController _searchController = TextEditingController();
-  Map<String, String> _students = {}; // Map to store student ID and name
+  Map<String, String> _students = {};
+  Map<String, String> _filteredStudents = {};
   List<bool> _attendanceStatus = [];
   DateTime _selectedDate = DateTime.now();
-  String? classId;
-  String? className;
   List<String> _notes = ["", "", "", ""];
   final ClassService _classService = ClassService();
 
@@ -34,19 +36,20 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
   void initState() {
     super.initState();
     _loadUserData();
+    _filteredStudents = _students;
   }
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    Set<String> keys = prefs.getKeys(); // Retrieve all keys
+    Set<String> keys = prefs.getKeys();  // Retrieve all keys
 
-// Print all keys and their values
+    // Print all keys and their values
     for (var key in keys) {
       print('$key: ${prefs.get(key)}');
     }
+
     setState(() {
-      role_name =
-          (prefs.getString('role') == "STUDENT") ? 'Sinh viên' : 'Giảng viên';
+      role_name = (prefs.getString('role') == "STUDENT") ? 'Sinh viên' : 'Giảng viên';
       token = prefs.getString('token');
       role = prefs.getString('role');
       name = prefs.getString('name');
@@ -66,10 +69,12 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
         token: token!,
         role: role!,
         accountId: id!,
-        classId: classId ?? '',
+        classId: classId!,
       );
+
       setState(() {
         _students = studentsMap; // Update _students with the fetched map
+        _filteredStudents = Map.from(_students); // Ensure the full list is shown initially
         _attendanceStatus = List<bool>.filled(_students.length, false);
       });
     }
@@ -103,27 +108,28 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
   void _filterStudents(String query) {
     setState(() {
       if (query.isEmpty) {
-        // Reset to all students if query is empty
+        _filteredStudents = Map.of(_students);
       } else {
-        _students = Map.fromEntries(_students.entries.where((entry) =>
-            entry.value.toLowerCase().contains(query.toLowerCase())));
+        _filteredStudents = Map.fromEntries(
+            _students.entries.where((entry) =>
+                entry.value.toLowerCase().contains(query.toLowerCase()))
+        );
       }
     });
   }
 
   Widget _buildStudentList() {
     return ListView.builder(
-      itemCount: _students.length,
+      itemCount: _filteredStudents.length,
       itemBuilder: (context, index) {
-        String studentId = _students.keys.elementAt(index);
-        String studentName = _students[studentId]!;
+        String studentId = _filteredStudents.keys.elementAt(index);
+        String studentName = _filteredStudents[studentId]!;
 
         return ListTile(
           leading: const CircleAvatar(
             radius: 18,
             backgroundColor: Colors.grey,
-            child:
-                Icon(Icons.circle_outlined, color: Color(0xFFFF5E5E), size: 20),
+            child: Icon(Icons.circle_outlined, color: Color(0xFFFF5E5E), size: 20),
           ),
           title: Row(
             children: [
@@ -131,8 +137,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
               Expanded(
                 child: Text(
                   studentName,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
               // Make the student ID take up equal space
@@ -140,10 +145,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                 child: Text(
                   studentId,
                   textAlign: TextAlign.end,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Color(0xFFFF5E5E)),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFFFF5E5E)),
                 ),
               ),
             ],
@@ -152,6 +154,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
       },
     );
   }
+
 
   Widget _buildAttendanceView() {
     return Column(
@@ -168,7 +171,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
               const SizedBox(width: 10),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF5E5E)),
+                    backgroundColor: const Color(0xFFFF5E5E)
+                ),
                 onPressed: _selectDate,
                 child: Text(
                   "${_selectedDate.toLocal()}".split(' ')[0],
@@ -181,11 +185,10 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
         // Attendance List
         Expanded(
           child: ListView.builder(
-            itemCount:
-                _students.length, // Dynamically get the length of students
+            itemCount: _filteredStudents.length,
             itemBuilder: (context, index) {
-              String studentId = _students.keys.elementAt(index);
-              String studentName = _students[studentId]!;
+              String studentId = _filteredStudents.keys.elementAt(index);
+              String studentName = _filteredStudents[studentId]!;
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -212,8 +215,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                       child: TextField(
                         onChanged: (note) {
                           setState(() {
-                            _notes[index] =
-                                note; // Update notes for each student
+                            _notes[index] = note; // Update notes for each student
                           });
                         },
                         decoration: InputDecoration(
@@ -233,7 +235,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
           padding: const EdgeInsets.all(10),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF5E5E)),
+                backgroundColor: const Color(0xFFFF5E5E)
+            ),
             onPressed: _saveAttendance, // Save the current attendance state
             child: const Text(
               'Nộp',
@@ -250,10 +253,10 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF5F5F5), // Màu nền sáng
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
-        child: Header2(title: 'Danh sách sinh viên'),
+        child: const Header2(title: 'Thông tin chi tiết lớp'),
       ),
       body: Column(
         children: [
@@ -273,18 +276,10 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                 ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${classId ?? 'No class ID'} - ${className ?? 'No class name'}',
-                  style: TextStyle(
-                    color: Color(0xFFFF5E5E),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            child: ClassInfoText(
+              backgroundColor: Colors.grey.withOpacity(0.3),
+              classId: classId, // Example class ID
+              className: className, // Example class name
             ),
           ),
           // Toggle Buttons for "Danh sách sinh viên" and "Điểm danh"
@@ -318,8 +313,9 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                     child: Text(
                       'Danh sách sinh viên',
                       style: TextStyle(
-                        color:
-                            _isStudentListActive ? Colors.white : Colors.black,
+                        color: _isStudentListActive
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     ),
                   ),
@@ -337,8 +333,9 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                     child: Text(
                       'Điểm danh',
                       style: TextStyle(
-                        color:
-                            !_isStudentListActive ? Colors.white : Colors.black,
+                        color: !_isStudentListActive
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     ),
                   ),

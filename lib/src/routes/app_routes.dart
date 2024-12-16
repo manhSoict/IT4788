@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:it_4788/src/views/create_class_view.dart';
 import 'package:it_4788/src/views/create_exercise_view.dart';
+import 'package:path/path.dart';
 
 import '../views/document_view.dart';
+import 'package:it_4788/src/views/edit_class_view.dart';
+import 'package:it_4788/src/views/edit_exercise_view.dart';
+import 'package:it_4788/src/views/notification_view.dart';
 import '../views/exercise_view.dart';
 import 'package:it_4788/src/views/chat_view.dart';
 import 'package:it_4788/src/views/search_chat_view.dart';
@@ -25,9 +29,12 @@ class AppRoutes {
       '/classdetail': (context) => const ClassDetailView(),
       '/class-list-student': (context) => const ClassListStudentView(),
       '/create-class': (context) => const CreateClassView(),
-      '/notification': (context) => const NotificationScreen(),
+      '/edit-class': (context) => const EditClassView(),
+      '/notification': (context) => const ListAbsenceView(),
+      '/notify': (context) => const NotificationScreen(),
       '/create-exercise': (context) => const CreateExerciseView(),
       '/exercise': (context) => const ExerciseListView(),
+      '/edit-exercise': (context) => const EditExerciseView(),
       '/listchat': (context) => const ListChat(),
       '/searchchat': (context) => const SearchChat(),
       '/chatview': (context) => const ChatView(),

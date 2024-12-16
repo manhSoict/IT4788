@@ -15,6 +15,7 @@ class _HomeViewState extends State<HomeView> {
   String? name;
   String? studentId;
   int currentIndex = 0;
+  List? menuItems;
 
   @override
   void initState() {
@@ -25,11 +26,10 @@ class _HomeViewState extends State<HomeView> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      role = (prefs.getString('role') == "STUDENT")
-          ? 'Sinh viên'
-          : 'Giảng viên'; // Ví dụ: Sinh viên/Giảng viên
+      role = prefs.getString('role');
       name = prefs.getString('name');
       studentId = prefs.getString('studentId');
+      menuItems = role == "STUDENT" ? menuItemsStudent : menuItemsLecturer;
     });
     print(name);
   }
@@ -40,24 +40,30 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  final List<Map<String, String>> menuItems = [
+  final List<Map<String, String>> menuItemsStudent = [
     {
-      'title': 'Thời khóa biểu',
-      'subtitle': 'Tra cứu thời khóa biểu, lịch thi',
-      'icon': 'assets/icons/calendar.png',
+      'title': 'Danh sách lớp',
+      'subtitle': 'Danh sách lớp sinh viên trong học kì',
+      'icon': 'assets/icons/class.png',
       'route': '/listclass',
     },
     {
-      'title': 'Đồ án',
-      'subtitle': 'Thông tin các đồ án',
+      'title': 'Bài tập',
+      'subtitle': 'Bài tập của sinh viên',
       'icon': 'assets/icons/project.png',
       'route': '/project',
     },
     {
-      'title': 'Thông báo tin tức',
-      'subtitle': 'Các thông báo quan trọng',
-      'icon': 'assets/icons/news.png',
+      'title': 'Đăng kí lớp',
+      'subtitle': 'Đăng kí vào lớp có trong học kì',
+      'icon': 'assets/icons/enrollment.png',
       'route': '/news',
+    },
+    {
+      'title': 'Xin phép nghỉ học',
+      'subtitle': 'Xin phép nghỉ học onlie',
+      'icon': 'assets/icons/absent.png',
+      'route': '/class',
     },
     {
       'title': 'Kết quả học tập',
@@ -66,28 +72,36 @@ class _HomeViewState extends State<HomeView> {
       'route': '/result',
     },
     {
-      'title': 'Lớp sinh viên',
-      'subtitle': 'Thông tin về lớp của sv',
+      'title': 'Tiện ích',
+      'subtitle': 'Sổ tay sinh viên, bản đồ',
+      'icon': 'assets/icons/tool.png',
+      'route': '/searchchat',
+    },
+    {
+      'title': 'Học phí',
+      'subtitle': 'Thông tin chi tiết về học phí',
+      'icon': 'assets/icons/tuition.png',
+      'route': '/chatview',
+    },
+  ];
+  final List<Map<String, String>> menuItemsLecturer = [
+    {
+      'title': 'Danh sách lớp',
+      'subtitle': 'Danh sách lớp sinh viên trong học kì',
       'icon': 'assets/icons/class.png',
-      'route': '/class',
+      'route': '/listclass',
+    },
+    {
+      'title': 'Tạo lớp',
+      'subtitle': 'Đăng kí vào lớp có trong học kì',
+      'icon': 'assets/icons/enrollment.png',
+      'route': '/news',
     },
     {
       'title': 'Tiện ích',
       'subtitle': 'Sổ tay sinh viên, bản đồ',
       'icon': 'assets/icons/tool.png',
       'route': '/create-class',
-    },
-    {
-      'title': 'Biểu mẫu online',
-      'subtitle': 'Bảng điểm, chứng nhận sv...',
-      'icon': 'assets/icons/form.png',
-      'route': '/forms',
-    },
-    {
-      'title': 'Học phí',
-      'subtitle': 'Thông tin chi tiết về học phí',
-      'icon': 'assets/icons/tuition.png',
-      'route': '/tuition',
     },
   ];
 
@@ -98,10 +112,10 @@ class _HomeViewState extends State<HomeView> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: Header(
-          role: role,
+          role: role == "STUDENT" ? 'Sinh viên' : 'Giảng viên',
           name: name,
           studentId: studentId,
-          title: currentIndex == 2 ? 'Thông tin chi tiết lớp' : null,
+          title: currentIndex > 2 ? 'Thông tin chi tiết lớp' : null,
           onBack: currentIndex == 2
               ? () {
                   setState(() {
@@ -120,12 +134,13 @@ class _HomeViewState extends State<HomeView> {
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
-          itemCount: menuItems.length,
+          itemCount: menuItems?.length,
           itemBuilder: (context, index) {
-            final item = menuItems[index];
+            final item = menuItems?[index];
             return GestureDetector(
               onTap: () {
-                Navigator.pushReplacementNamed(context, item['route']!);
+                Navigator.pushNamed(context, item['route']!);
+                //Navigator.pushReplacementNamed(context, item['route']!);
               },
               child: Container(
                 decoration: BoxDecoration(

@@ -39,7 +39,7 @@ class Footer extends StatelessWidget {
           _buildTabItem(
             context: context,
             index: 1,
-            icon: Icons.search,
+            icon: Icons.message,
             label: 'Tin nhắn',
             routeName: '/messages',
           ),

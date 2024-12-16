@@ -46,7 +46,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
       token = prefs.getString('token');
       role = prefs.getString('role');
       name = prefs.getString('name');
-      id = prefs.getString('id');
+      id = prefs.getString('userId');
     });
 
     print('Role: $role');

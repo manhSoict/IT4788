@@ -6,8 +6,9 @@ class ClassDetail extends StatelessWidget {
   final String schedule;
   final String date;
   final String classCode;
-  final String type;
-  final int studentCount;
+  final String lecturerName;
+  final String classType;
+  final String studentCount;
   final String accessCode;
   final String link;
   final String materialLink;
@@ -19,7 +20,8 @@ class ClassDetail extends StatelessWidget {
     required this.schedule,
     required this.date,
     required this.classCode,
-    required this.type,
+    required this.lecturerName,
+    required this.classType,
     required this.studentCount,
     required this.accessCode,
     required this.link,
@@ -81,7 +83,7 @@ class ClassDetail extends StatelessWidget {
               children: [
                 _buildDetailLabel("Loại hình:"),
                 SizedBox(width: screenWidth * 0.2),
-                _buildDetailValue(type),
+                _buildDetailValue(classType),
               ],
             ),
             const SizedBox(height: 8),
@@ -98,6 +100,14 @@ class ClassDetail extends StatelessWidget {
                 _buildDetailLabel("Kỳ:"),
                 SizedBox(width: screenWidth * 0.2),
                 _buildDetailValue("20241"),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                _buildDetailLabel("Giảng viên"),
+                SizedBox(width: screenWidth * 0.2),
+                _buildDetailValue("Nguyễn Minh Phương"),
               ],
             ),
             const SizedBox(height: 8),

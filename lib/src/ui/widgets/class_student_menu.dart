@@ -12,7 +12,7 @@ class _ClassStMenuState extends State<ClassStMenu> {
   final List<Map<String, dynamic>> menuItems = [
     {
       'title': 'Danh sách sinh viên',
-      'icon': 'assets/icons/news.png',
+      'icon': 'assets/icons/people.png',
       'route': '/class-list-student'
     },
     {
@@ -29,6 +29,11 @@ class _ClassStMenuState extends State<ClassStMenu> {
     {'title': 'Tin nhắn', 'icon': 'assets/icons/news.png'},
     {'title': 'Khảo sát', 'icon': 'assets/icons/news.png'},
     {'title': 'Cập nhật thông tin', 'icon': 'assets/icons/news.png'},
+    {'title': 'Bài tập', 'icon': 'assets/icons/project.png'},
+    {'title': 'Xin nghỉ học', 'icon': 'assets/icons/absent.png'},
+    {'title': 'Tài liệu', 'icon': 'assets/icons/material.png'},
+    {'title': 'Điểm học phần', 'icon': 'assets/icons/result.png'},
+    {'title': 'Khảo sát', 'icon': 'assets/icons/form.png'},
   ];
 
   @override

@@ -59,7 +59,7 @@ class _SettingViewSate extends State<SettingView> {
           ),
           const SizedBox(height: 20),
           const MenuItem(title: 'Trợ giúp và hỗ trợ'),
-          const MenuItem(title: 'Cài đặt và quyền riêng tư'),
+          const MenuItem(title: 'Đổi mật khẩu'),
           const MenuItem(title: 'Đăng xuất'),
         ],
       ),

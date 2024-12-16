@@ -3,6 +3,9 @@ import 'package:it_4788/src/views/create_class_view.dart';
 import 'package:it_4788/src/views/create_exercise_view.dart';
 import 'package:it_4788/src/views/notification_view.dart';
 import '../views/exercise_view.dart';
+import 'package:it_4788/src/views/chat_view.dart';
+import 'package:it_4788/src/views/search_chat_view.dart';
+import '../views/listchat_view.dart';
 import '../views/login_view.dart';
 import '../views/home_view.dart';
 import '../views/setting_view.dart';
@@ -22,7 +25,13 @@ class AppRoutes {
       '/create-class': (context) => const CreateClassView(),
       '/notification': (context) => const NotificationScreen(),
       '/create-exercise': (context) => const CreateExerciseView(),
-      '/exercise': (context) => const ExerciseListView()
+      '/exercise': (context) => const ExerciseListView(),
+      '/listchat': (context) => const ListChat(),
+      '/searchchat': (context) => const SearchChat(),
+      '/chatview': (context) => const ChatView(
+            partnerId: "485",
+            conversationId: "5927",
+          ),
     };
   }
 }

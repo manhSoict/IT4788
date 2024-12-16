@@ -1,29 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ClassCard extends StatelessWidget {
   final String startTime;
   final String endTime;
-  final String courseCode;
-  final String courseName;
+  final String classId;
+  final String className;
   final String location;
   final String scheduleDetail;
   final String week;
+  final String? attachedCode;
+  final String? lecturerName;
+  final String lecturerId;
+  final String status;
+  final String classType;
+  final String studentCount;
 
-  const ClassCard({
-    Key? key,
-    required this.startTime,
-    required this.endTime,
-    required this.courseCode,
-    required this.courseName,
-    required this.location,
-    required this.scheduleDetail,
-    required this.week,
-  }) : super(key: key);
+  const ClassCard(
+      {Key? key,
+      required this.startTime,
+      required this.endTime,
+      required this.classId,
+      required this.className,
+      required this.location,
+      required this.scheduleDetail,
+      required this.week,
+      this.attachedCode,
+      this.lecturerName,
+      required this.lecturerId,
+      required this.classType,
+      required this.status,
+      required this.studentCount})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('classId', classId);
+        print('Course code saved: $classId');
+        await prefs.setString('className', className);
+        await prefs.setString('endTime', endTime);
+        await prefs.setString('startTime', startTime);
+        await prefs.setString('location', location);
+        await prefs.setString('scheduleDetail', scheduleDetail);
+        await prefs.setString('week', week);
+        await prefs.setString('attachedCode', attachedCode ?? '');
+        await prefs.setString('lecturerName', lecturerName ?? '');
+        await prefs.setString('lecturerId', lecturerId);
+        await prefs.setString('status', status);
+        await prefs.setString('classType', classType);
+        await prefs.setString('studentCount', studentCount);
+
+        // Chuyển sang màn hình chi tiết lớp học
         Navigator.pushNamed(context, '/classdetail');
       },
       child: Card(
@@ -77,7 +107,7 @@ class ClassCard extends StatelessWidget {
                   children: [
                     // Mã và tên khóa học
                     Text(
-                      "$courseCode - $courseName",
+                      "$classId - $className",
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

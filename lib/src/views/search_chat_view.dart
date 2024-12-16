@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_seach.dart'; // Import file model User
 
@@ -92,9 +93,9 @@ class _SearchChatState extends State<SearchChat> {
                       Text("${user.firstName} ${user.lastName}"), // Tên đầy đủ
                   subtitle: Text(user.email), // Email của người dùng
                   onTap: () {
-                    //_onSuggestionTapped(user);
-                    print(
-                        "${user.firstName} ${user.lastName} có id là ${user.accountId}");
+                    _clckConversation(user.accountId);
+                    // print(
+                    // "${user.firstName} ${user.lastName} có id là ${user.accountId}");
                   },
                 );
               },
@@ -109,5 +110,51 @@ class _SearchChatState extends State<SearchChat> {
   void dispose() {
     searchController.dispose();
     super.dispose();
+  }
+}
+
+void _clckConversation(String accountId) async {
+  // final email = _emailController.text.trim();
+  // final password = _passwordController.text;
+
+  // if (email.isEmpty || password.isEmpty) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text('Please enter all fields')),
+  //   );
+  //   return;
+  // }
+
+  Future<void> fetchfindConversationId(String partnerId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    const String url =
+        'http://157.66.24.126:8080/it5023e/get_list_conversation';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"token": token, "index": "0", "count": "20"}),
+    );
+
+    String conversationId = '-1'; // Giá trị mặc định nếu không tìm thấy
+
+    if (response.statusCode == 200) {
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      final List conversations = data['data']['conversations'] ?? [];
+
+      // Tìm conversationId dựa trên partnerId
+      for (var conversation in conversations) {
+        if (conversation['partner']['id'].toString() == partnerId) {
+          conversationId = conversation['id'];
+          print(conversationId);
+          break;
+        }
+      }
+    } else {
+      print("Error: ${response.statusCode}");
+    }
+
+    // Lưu conversationId vào SharedPreferences
+    await prefs.setString('conversationId', conversationId);
   }
 }

@@ -4,6 +4,8 @@ import 'package:it_4788/src/ui/components/footer.dart';
 import 'package:it_4788/src/ui/components/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../ui/components/header2.dart';
+
 class ClassListStudentView extends StatefulWidget {
   const ClassListStudentView({Key? key}) : super(key: key);
 
@@ -23,7 +25,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
   Map<String, String> _students = {}; // Map to store student ID and name
   List<bool> _attendanceStatus = [];
   DateTime _selectedDate = DateTime.now();
-  String classId = '000087';
+  String? classId;
+  String? className;
   List<String> _notes = ["", "", "", ""];
   final ClassService _classService = ClassService();
 
@@ -35,18 +38,21 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    Set<String> keys = prefs.getKeys();  // Retrieve all keys
+    Set<String> keys = prefs.getKeys(); // Retrieve all keys
 
 // Print all keys and their values
     for (var key in keys) {
       print('$key: ${prefs.get(key)}');
     }
     setState(() {
-      role_name = (prefs.getString('role') == "STUDENT") ? 'Sinh viên' : 'Giảng viên';
+      role_name =
+          (prefs.getString('role') == "STUDENT") ? 'Sinh viên' : 'Giảng viên';
       token = prefs.getString('token');
       role = prefs.getString('role');
       name = prefs.getString('name');
       id = prefs.getString('userId');
+      classId = prefs.getString('classId');
+      className = prefs.getString('className');
     });
 
     print('Role: $role');
@@ -60,7 +66,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
         token: token!,
         role: role!,
         accountId: id!,
-        classId: classId,
+        classId: classId ?? '',
       );
       setState(() {
         _students = studentsMap; // Update _students with the fetched map
@@ -99,10 +105,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
       if (query.isEmpty) {
         // Reset to all students if query is empty
       } else {
-        _students = Map.fromEntries(
-            _students.entries.where((entry) =>
-                entry.value.toLowerCase().contains(query.toLowerCase()))
-        );
+        _students = Map.fromEntries(_students.entries.where((entry) =>
+            entry.value.toLowerCase().contains(query.toLowerCase())));
       }
     });
   }
@@ -118,7 +122,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
           leading: const CircleAvatar(
             radius: 18,
             backgroundColor: Colors.grey,
-            child: Icon(Icons.circle_outlined, color: Color(0xFFFF5E5E), size: 20),
+            child:
+                Icon(Icons.circle_outlined, color: Color(0xFFFF5E5E), size: 20),
           ),
           title: Row(
             children: [
@@ -126,7 +131,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
               Expanded(
                 child: Text(
                   studentName,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
               // Make the student ID take up equal space
@@ -134,7 +140,10 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                 child: Text(
                   studentId,
                   textAlign: TextAlign.end,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFFFF5E5E)),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color(0xFFFF5E5E)),
                 ),
               ),
             ],
@@ -143,7 +152,6 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
       },
     );
   }
-
 
   Widget _buildAttendanceView() {
     return Column(
@@ -160,8 +168,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
               const SizedBox(width: 10),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF5E5E)
-                ),
+                    backgroundColor: const Color(0xFFFF5E5E)),
                 onPressed: _selectDate,
                 child: Text(
                   "${_selectedDate.toLocal()}".split(' ')[0],
@@ -174,7 +181,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
         // Attendance List
         Expanded(
           child: ListView.builder(
-            itemCount: _students.length, // Dynamically get the length of students
+            itemCount:
+                _students.length, // Dynamically get the length of students
             itemBuilder: (context, index) {
               String studentId = _students.keys.elementAt(index);
               String studentName = _students[studentId]!;
@@ -204,7 +212,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                       child: TextField(
                         onChanged: (note) {
                           setState(() {
-                            _notes[index] = note; // Update notes for each student
+                            _notes[index] =
+                                note; // Update notes for each student
                           });
                         },
                         decoration: InputDecoration(
@@ -224,8 +233,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
           padding: const EdgeInsets.all(10),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF5E5E)
-            ),
+                backgroundColor: const Color(0xFFFF5E5E)),
             onPressed: _saveAttendance, // Save the current attendance state
             child: const Text(
               'Nộp',
@@ -245,10 +253,7 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
-        child: Header(
-          role: role_name,
-          name: name,
-        ),
+        child: Header2(title: 'Danh sách sinh viên'),
       ),
       body: Column(
         children: [
@@ -268,11 +273,11 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                 ),
               ],
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${"IT4788"} - ${"Phát triển ứng dụng đa nền tảng"}',
+                  '${classId ?? 'No class ID'} - ${className ?? 'No class name'}',
                   style: TextStyle(
                     color: Color(0xFFFF5E5E),
                     fontSize: 16,
@@ -313,9 +318,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                     child: Text(
                       'Danh sách sinh viên',
                       style: TextStyle(
-                        color: _isStudentListActive
-                            ? Colors.white
-                            : Colors.black,
+                        color:
+                            _isStudentListActive ? Colors.white : Colors.black,
                       ),
                     ),
                   ),
@@ -333,9 +337,8 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                     child: Text(
                       'Điểm danh',
                       style: TextStyle(
-                        color: !_isStudentListActive
-                            ? Colors.white
-                            : Colors.black,
+                        color:
+                            !_isStudentListActive ? Colors.white : Colors.black,
                       ),
                     ),
                   ),

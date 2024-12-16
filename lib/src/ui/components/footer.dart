@@ -41,7 +41,7 @@ class Footer extends StatelessWidget {
             index: 1,
             icon: Icons.message,
             label: 'Tin nhắn',
-            routeName: '/messages',
+            routeName: '/listchat',
           ),
           _buildTabItem(
             context: context,
@@ -66,7 +66,7 @@ class Footer extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (index != currentIndex) {
-          Navigator.pushReplacementNamed(context, routeName);
+          Navigator.pushNamed(context, routeName);
         }
       },
       child: Column(

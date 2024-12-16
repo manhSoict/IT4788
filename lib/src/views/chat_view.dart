@@ -5,13 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // Màn hình Chat
 class ChatView extends StatefulWidget {
-  final String partnerId;
-  final String conversationId;
-
   const ChatView({
     Key? key,
-    required this.partnerId,
-    required this.conversationId,
   }) : super(key: key);
 
   @override
@@ -23,20 +18,67 @@ class _ChatViewState extends State<ChatView> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String? userId;
+  String? partnerId;
+  String? conversationId;
 
   @override
   void initState() {
     super.initState();
-    fetchCurrentUserId();
+    fetchCurrentUserId().then((_) {
+      SharedPreferences.getInstance().then((prefs) {
+        final token = prefs.getString('token');
+        if (token != null && partnerId != null) {
+          fetchInfoPartner(token, partnerId!);
+        }
+      });
+    });
     fetchMessages();
   }
 
   Future<void> fetchCurrentUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
+      final token = prefs.getString('token');
       userId = prefs.getString('userId');
-      print(userId); // Lấy userId hiện tại
+      partnerId = prefs.getString('partnerId');
+      conversationId = prefs.getString('conversationId');
+      // print(userId); // Lấy userId hiện tại
     });
+  }
+
+  String? partnerName;
+  String? partnerImg;
+
+  Future<void> fetchInfoPartner(String token, String userId) async {
+    const String url = "http://157.66.24.126:8080/it4788/get_user_info";
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "token": token,
+          "user_id": userId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        if (data['code'] == "1000") {
+          final userInfo = data['data'];
+          setState(() {
+            partnerName = userInfo['name'];
+            partnerImg = userInfo['avatar'];
+          });
+        } else {
+          print("Lỗi: ${data['message']}");
+        }
+      } else {
+        print("Lỗi kết nối: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Đã xảy ra lỗi: $e");
+    }
   }
 
   Future<void> fetchMessages() async {
@@ -56,8 +98,8 @@ class _ChatViewState extends State<ChatView> {
           "token": token,
           "index": "0",
           "count": "40",
-          "partner_id": widget.partnerId,
-          "conversation_id": widget.conversationId,
+          "partner_id": partnerId,
+          "conversation_id": conversationId,
           "mark_as_read": "true",
         }),
         headers: {"Content-Type": "application/json"},
@@ -135,42 +177,45 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white, // Màu nền trắng
+        backgroundColor: Colors.white,
         title: Row(
           children: [
             CircleAvatar(
               radius: 12,
               backgroundColor: Colors.blueGrey,
-              child: Text(
-                "D2",
-                style: TextStyle(
-                    color: Colors.white, fontSize: 12), // Chữ bên trong avatar
-              ),
+              backgroundImage:
+                  partnerImg != null ? NetworkImage(partnerImg!) : null,
+              child: partnerImg == null
+                  ? Text(
+                      partnerName != null && partnerName!.isNotEmpty
+                          ? partnerName!.substring(0, 1).toUpperCase()
+                          : "",
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    )
+                  : null,
             ),
             const SizedBox(width: 5),
-            const Text(
-              "Doan Van Nam",
-              style:
-                  TextStyle(color: Colors.black, fontSize: 16), // Màu chữ đen
+            Text(
+              partnerName ?? "Đang tải...",
+              style: const TextStyle(color: Colors.black, fontSize: 12),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.videocam, color: Colors.black),
+            icon: const Icon(Icons.videocam, color: Colors.black),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.call, color: Colors.black),
+            icon: const Icon(Icons.call, color: Colors.black),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.info_outline, color: Colors.black),
+            icon: const Icon(Icons.info_outline, color: Colors.black),
             onPressed: () {},
           ),
         ],
-        iconTheme:
-            const IconThemeData(color: Colors.black), // Màu cho các icon back
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [

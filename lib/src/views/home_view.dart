@@ -81,13 +81,13 @@ class _HomeViewState extends State<HomeView> {
       'title': 'Tiện ích',
       'subtitle': 'Sổ tay sinh viên, bản đồ',
       'icon': 'assets/icons/tool.png',
-      'route': '/searchchat',
+      'route': '/lecturer-document',
     },
     {
       'title': 'Học phí',
       'subtitle': 'Thông tin chi tiết về học phí',
       'icon': 'assets/icons/tuition.png',
-      'route': '/chatview',
+      'route': '/notification',
     },
   ];
   final List<Map<String, String>> menuItemsLecturer = [
@@ -107,7 +107,7 @@ class _HomeViewState extends State<HomeView> {
       'title': 'Tiện ích',
       'subtitle': 'Sổ tay sinh viên, bản đồ',
       'icon': 'assets/icons/tool.png',
-      'route': '/create-class',
+      'route': '/lecturer-document',
     },
   ];
 

@@ -17,21 +17,15 @@ class _ClassStMenuState extends State<ClassStMenu> {
     },
     {
       'title': 'Bài tập',
-      'icon': 'assets/icons/news.png',
-      'route': '/exercise'
+      'icon': 'assets/icons/project.png',
+      'route': '/lecturer-assignment'
     },
-    {
-      'title': 'Thông báo',
-      'icon': 'assets/icons/news.png',
-      'route': '/notification'
-    },
-    {'title': 'Nhập điểm', 'icon': 'assets/icons/news.png'},
-    {'title': 'Tin nhắn', 'icon': 'assets/icons/news.png'},
-    {'title': 'Khảo sát', 'icon': 'assets/icons/news.png'},
-    {'title': 'Cập nhật thông tin', 'icon': 'assets/icons/news.png'},
-    {'title': 'Bài tập', 'icon': 'assets/icons/project.png'},
     {'title': 'Xin nghỉ học', 'icon': 'assets/icons/absent.png'},
-    {'title': 'Tài liệu', 'icon': 'assets/icons/material.png'},
+    {
+      'title': 'Tài liệu',
+      'icon': 'assets/icons/material.png',
+      'route': '/lecturer-document'
+    },
     {'title': 'Điểm học phần', 'icon': 'assets/icons/result.png'},
     {'title': 'Khảo sát', 'icon': 'assets/icons/form.png'},
   ];

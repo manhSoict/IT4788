@@ -7,6 +7,7 @@ import '../services/exercise_service.dart';
 import 'package:fluttertoast/fluttertoast.dart'; // For showing toast messages
 
 class CreateExerciseView extends StatefulWidget {
+  const CreateExerciseView({Key? key}) : super(key: key);
   @override
   _CreateExerciseViewState createState() => _CreateExerciseViewState();
 }
@@ -117,13 +118,6 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
           key: _formKey,
           child: ListView(
             children: [
-              // Token field
-              TextFormField(
-                initialValue: _token,
-                readOnly: true,
-                decoration: InputDecoration(labelText: 'Token'),
-              ),
-
               // Class ID field
               TextFormField(
                 decoration: InputDecoration(labelText: 'Class ID'),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:it_4788/src/views/create_class_view.dart';
+import 'package:it_4788/src/views/create_exercise_view.dart';
 import 'package:it_4788/src/views/notification_view.dart';
+import '../views/exercise_view.dart';
 import '../views/login_view.dart';
 import '../views/home_view.dart';
 import '../views/setting_view.dart';
@@ -18,7 +20,9 @@ class AppRoutes {
       '/classdetail': (context) => const ClassDetailView(),
       '/class-list-student': (context) => const ClassListStudentView(),
       '/create-class': (context) => const CreateClassView(),
-      '/notification': (context) => const NotificationScreen()
+      '/notification': (context) => const NotificationScreen(),
+      '/create-exercise': (context) => const CreateExerciseView(),
+      '/exercise': (context) => const ExerciseListView()
     };
   }
 }

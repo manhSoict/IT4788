@@ -53,4 +53,48 @@ class ExerciseService {
       return {'success': false, 'message': 'Error during API request'};
     }
   }
+
+  Future<Map<String, dynamic>> getAllExercises({
+    required String token,
+    required String classId,
+  }) async {
+    try {
+      // Prepare the request URL
+      var url = Uri.parse('$baseUrl/it5023e/get_all_surveys');
+
+      // Prepare the request body
+      var requestBody = json.encode({
+        'token': token,
+        'class_id': classId,
+      });
+
+      // Send the POST request with the required headers
+      var response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: requestBody,
+      );
+
+      // Process the response
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+
+        // Check for success in the response
+        if (responseData['meta']['code'] == '1000') {
+          return {
+            'success': true,
+            'message': 'Exercises retrieved successfully',
+            'data': responseData['data'], // Assuming the exercises are in 'data'
+          };
+        } else {
+          return {'success': false, 'message': responseData['meta']['message']};
+        }
+      } else {
+        return {'success': false, 'message': 'Failed to retrieve exercises'};
+      }
+    } catch (e) {
+      print('Error during API request: $e');
+      return {'success': false, 'message': 'Error during API request'};
+    }
+  }
 }

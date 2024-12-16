@@ -9,7 +9,7 @@ class Header2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: const Color(0xFFFF5E5E), // Màu nền đỏ
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.only(top: 52, bottom: 12, left: 16, right: 16),
       child: Row(
         children: [
           const SizedBox(height: 38),

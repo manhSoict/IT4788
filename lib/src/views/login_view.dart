@@ -47,7 +47,6 @@ class _LoginViewState extends State<LoginView>
       await prefs.setString('email', user.email);
       await prefs.setString('role', user.role);
       await prefs.setString('name', user.name);
-      // print(user.name);
       await prefs.setString('userId', user.id);
       Navigator.pushReplacementNamed(context, '/home');
     } else {

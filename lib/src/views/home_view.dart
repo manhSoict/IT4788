@@ -13,7 +13,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   String? role;
   String? name;
-  String? studentId;
+  String? userId;
   int currentIndex = 0;
   List? menuItems;
 
@@ -27,11 +27,17 @@ class _HomeViewState extends State<HomeView> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       role = prefs.getString('role');
+      print(role);
       name = prefs.getString('name');
-      studentId = prefs.getString('studentId');
+      userId = prefs.getString('userId');
+    });
+    _loadMenuItems();
+  }
+
+  Future<void> _loadMenuItems() async {
+    setState(() {
       menuItems = role == "STUDENT" ? menuItemsStudent : menuItemsLecturer;
     });
-    print(name);
   }
 
   void _onTabSelected(int index) {
@@ -114,7 +120,7 @@ class _HomeViewState extends State<HomeView> {
         child: Header(
           role: role == "STUDENT" ? 'Sinh viên' : 'Giảng viên',
           name: name,
-          studentId: studentId,
+          studentId: userId,
           title: currentIndex > 2 ? 'Thông tin chi tiết lớp' : null,
           onBack: currentIndex == 2
               ? () {
@@ -127,68 +133,72 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 3 / 2.5,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-          ),
-          itemCount: menuItems?.length,
-          itemBuilder: (context, index) {
-            final item = menuItems?[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, item['route']!);
-                //Navigator.pushReplacementNamed(context, item['route']!);
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      blurRadius: 6,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
+        child: menuItems == null || menuItems!.isEmpty
+            ? Center(
+                child:
+                    CircularProgressIndicator()) // Hiển thị loading khi menuItems chưa có dữ liệu
+            : GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 3 / 2.5,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      item['icon']!,
-                      width: 40,
-                      height: 40,
-                      color: Colors.red,
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      item['title']!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                itemCount: menuItems?.length,
+                itemBuilder: (context, index) {
+                  final item = menuItems?[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, item['route']!);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            blurRadius: 6,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            item['icon']!,
+                            width: 40,
+                            height: 40,
+                            color: Colors.red,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            item['title']!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            item['subtitle']!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      item['subtitle']!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
+
       bottomNavigationBar: Footer(
         currentIndex: currentIndex,
       ),

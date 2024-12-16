@@ -4,6 +4,8 @@ import 'package:it_4788/src/ui/components/card/RequestCard.dart';
 import 'package:it_4788/src/ui/components/header2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../ui/components/footer.dart';
+
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
 
@@ -16,6 +18,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   String? token;
   String? classId;
   final AbsenceService _absenceService = AbsenceService();
+  int currentIndex = 0;
 
   void _selectDate() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -107,6 +110,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
             },
           ),
         ],
+      ),
+      bottomNavigationBar: Footer(
+        currentIndex: currentIndex,
       ),
     );
   }

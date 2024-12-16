@@ -3,6 +3,7 @@ import 'package:it_4788/src/ui/components/header2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/exercise_service.dart';
 import '../ui/components/card/ExerciseCard.dart';
+import '../ui/components/footer.dart';
 
 class ExerciseListView extends StatefulWidget {
   const ExerciseListView({Key? key}) : super(key: key);
@@ -13,6 +14,9 @@ class ExerciseListView extends StatefulWidget {
 
 class _ExerciseListPageState extends State<ExerciseListView> {
   final ExerciseService _exerciseService = ExerciseService();
+
+  int currentIndex = 0;
+
   bool _isLoading = true;
   List<dynamic> _exercises = [];
   String _errorMessage = '';
@@ -119,6 +123,9 @@ class _ExerciseListPageState extends State<ExerciseListView> {
             onDelete: () => _deleteExercise(exercise['id']),
           );
         },
+      ),
+      bottomNavigationBar: Footer(
+        currentIndex: currentIndex,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreateExercise,

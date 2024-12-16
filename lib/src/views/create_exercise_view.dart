@@ -5,7 +5,9 @@ import 'package:intl/intl.dart'; // For formatting the date
 import 'package:it_4788/src/ui/components/header2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/exercise_service.dart';
-import 'package:fluttertoast/fluttertoast.dart'; // For showing toast messages
+import 'package:fluttertoast/fluttertoast.dart';
+
+import '../ui/components/footer.dart'; // For showing toast messages
 
 class CreateExerciseView extends StatefulWidget {
   const CreateExerciseView({Key? key}) : super(key: key);
@@ -15,6 +17,8 @@ class CreateExerciseView extends StatefulWidget {
 
 class _CreateExerciseViewState extends State<CreateExerciseView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  int currentIndex = 0;
 
   // Form fields
   String? _token;
@@ -185,6 +189,9 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: Footer(
+        currentIndex: currentIndex,
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // Add this for file picker
 import 'package:intl/intl.dart'; // For formatting the date
@@ -45,12 +46,21 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
 
   // Function to pick a file
   Future<void> _pickFile() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery); // Or use ImageSource.camera if needed
-    if (pickedFile != null) {
+    // Use file_picker to pick any file, specifying PDF or other types if needed
+    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+
+    if (result != null) {
+      // Get the picked file
+      PlatformFile file = result.files.first;
+
       setState(() {
-        _file = File(pickedFile.path);
+        _file = File(file.path!);  // Ensure that file.path is non-null
       });
+
+      print('File picked: ${file.name}, path: ${file.path}');
+    } else {
+      // User canceled the picker
+      print("No file selected");
     }
   }
 

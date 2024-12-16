@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:it_4788/src/ui/components/footer.dart';
 import 'package:it_4788/src/ui/components/header.dart';
+import 'package:it_4788/src/ui/components/header2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/class_service.dart';
 
@@ -100,10 +101,13 @@ class _CreateClassViewState extends State<CreateClassView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Class')),
+      backgroundColor: const Color(0xFFF5F5F5), // Màu nền sáng
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: const Header2(title: 'Tạo lớp'),
+      ),
       body: Column(
         children: [
-          const Header(),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),

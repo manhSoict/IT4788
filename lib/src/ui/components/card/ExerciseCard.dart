@@ -4,12 +4,16 @@ class ExerciseTile extends StatelessWidget {
   final String title;
   final String? description;
   final VoidCallback? onTap;
+  final VoidCallback? onEdit; // Callback for Edit
+  final VoidCallback? onDelete; // Callback for Delete
 
   const ExerciseTile({
     Key? key,
     required this.title,
     this.description,
     this.onTap,
+    this.onEdit,
+    this.onDelete,
   }) : super(key: key);
 
   @override
@@ -23,24 +27,60 @@ class ExerciseTile extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title, // Title of the exercise
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+              // Left side: Title and description
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title, // Title of the exercise
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      description ?? 'No description', // Description or fallback
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
-                description ?? 'No description', // Description or fallback
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
+
+              // Right side: PopupMenuButton for options
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'edit' && onEdit != null) {
+                    onEdit!(); // Trigger Edit callback
+                  } else if (value == 'delete' && onDelete != null) {
+                    onDelete!(); // Trigger Delete callback
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: ListTile(
+                      leading: Icon(Icons.edit, color: Colors.blue),
+                      title: Text('Edit'),
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: ListTile(
+                      leading: Icon(Icons.delete, color: Colors.red),
+                      title: Text('Delete'),
+                    ),
+                  ),
+                ],
+                icon: const Icon(Icons.more_vert, color: Colors.black54), // 3-dot menu icon
               ),
             ],
           ),

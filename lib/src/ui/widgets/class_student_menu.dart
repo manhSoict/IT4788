@@ -25,10 +25,15 @@ class _ClassStMenuState extends State<ClassStMenu> {
       'icon': 'assets/icons/news.png',
       'route': '/notification'
     },
+    {
+      'title': 'Cập nhật thông tin',
+      'icon': 'assets/icons/news.png',
+      'route': '/edit-class'
+    },
+
     {'title': 'Nhập điểm', 'icon': 'assets/icons/news.png'},
     {'title': 'Tin nhắn', 'icon': 'assets/icons/news.png'},
     {'title': 'Khảo sát', 'icon': 'assets/icons/news.png'},
-    {'title': 'Cập nhật thông tin', 'icon': 'assets/icons/news.png'},
     {'title': 'Bài tập', 'icon': 'assets/icons/project.png'},
     {'title': 'Xin nghỉ học', 'icon': 'assets/icons/absent.png'},
     {'title': 'Tài liệu', 'icon': 'assets/icons/material.png'},

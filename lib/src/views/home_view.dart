@@ -95,13 +95,13 @@ class _HomeViewState extends State<HomeView> {
       'title': 'Tạo lớp',
       'subtitle': 'Đăng kí vào lớp có trong học kì',
       'icon': 'assets/icons/enrollment.png',
-      'route': '/news',
+      'route': '/create-class',
     },
     {
       'title': 'Tiện ích',
       'subtitle': 'Sổ tay sinh viên, bản đồ',
       'icon': 'assets/icons/tool.png',
-      'route': '/create-class',
+      'route': '/news',
     },
   ];
 

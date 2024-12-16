@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:it_4788/src/ui/components/header2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/exercise_service.dart';
 import '../ui/components/card/ExerciseCard.dart';
@@ -16,12 +17,12 @@ class _ExerciseListPageState extends State<ExerciseListView> {
   List<dynamic> _exercises = [];
   String _errorMessage = '';
   String? token;
+  String? classId;
 
-  // Fetch exercises when the page is loaded
   @override
   void initState() {
     super.initState();
-    _loadUserData();  // Load the token first
+    _loadUserData();
   }
 
   // Load the user data (token) from shared preferences
@@ -29,10 +30,10 @@ class _ExerciseListPageState extends State<ExerciseListView> {
     final prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      token = prefs.getString('token');  // Retrieve the token
+      token = prefs.getString('token');
+      classId = prefs.getString('classId');
     });
 
-    // If token is null, show an error message, otherwise fetch exercises
     if (token != null) {
       _fetchExercises();
     } else {
@@ -45,33 +46,56 @@ class _ExerciseListPageState extends State<ExerciseListView> {
 
   // Function to fetch exercises
   Future<void> _fetchExercises() async {
-    if (token == null) return;  // Ensure token is not null
+    if (token == null) return;
 
     var response = await _exerciseService.getAllExercises(
       token: token!,
-      classId: '000087',
+      classId: classId!,
     );
 
     setState(() {
       _isLoading = false;
       if (response['success']) {
-        _exercises = response['data'];  // Assuming data contains the list of exercises
+        _exercises = response['data'];
       } else {
         _errorMessage = response['message'];
       }
     });
   }
 
-  // Navigate to /create-exercise page when the + button is clicked
   void _navigateToCreateExercise() {
     Navigator.pushNamed(context, '/create-exercise');
+  }
+
+  // Function to handle Edit action
+  void _editExercise() {
+    Navigator.pushNamed(context, '/edit-exercise');
+  }
+
+  // Function to handle Delete action
+  Future<void> _deleteExercise(int surveyId) async {
+    var response = await _exerciseService.deleteExercise(
+      token: token!,
+      surveyId: surveyId,
+    );
+
+    if (response['success']) {
+      setState(() {
+        _exercises.removeWhere((exercise) => exercise['id'] == surveyId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Exercise deleted successfully')));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete exercise')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Exercise List'),
+      backgroundColor: const Color(0xFFF5F5F5),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: const Header2(title: 'Danh sách bài tập'),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -85,9 +109,14 @@ class _ExerciseListPageState extends State<ExerciseListView> {
             title: exercise['title'],
             description: exercise['description'],
             onTap: () {
-              // Handle tap (e.g., navigate to a detailed page)
-              print('Tapped on ${exercise['title']}');
+
             },
+            onEdit: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setInt('exerciseId', exercise['id']);
+              _editExercise();
+            },
+            onDelete: () => _deleteExercise(exercise['id']),
           );
         },
       ),

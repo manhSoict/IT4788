@@ -99,4 +99,47 @@ class ClassService {
     }
   }
 
+  // Method to edit a class
+  Future<Map<String, dynamic>> editClass({
+    required String token,
+    required String classId,
+    required String className,
+    required String status, // ACTIVE, COMPLETED, UPCOMING
+    required String startDate,
+    required String endDate,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/it5023e/edit_class'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'token': token,
+          'class_id': classId,
+          'class_name': className,
+          'status': status, // Ensure valid status: "ACTIVE", "COMPLETED", "UPCOMING"
+          'start_date': startDate,
+          'end_date': endDate,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(utf8.decode(response.bodyBytes));
+
+        // Check if the API response was successful
+        if (responseData['meta']['code'] == '1000') {
+          return {'success': true, 'message': 'Class edited successfully'};
+        } else {
+          return {'success': false, 'message': responseData['meta']['message']};
+        }
+      } else {
+        return {'success': false, 'message': 'Failed to edit class'};
+      }
+    } catch (e) {
+      print('Error during API request: $e');
+      return {'success': false, 'message': 'Error during API request'};
+    }
+  }
+
 }

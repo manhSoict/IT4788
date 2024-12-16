@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:it_4788/src/services/absence_service.dart';
 import 'package:it_4788/src/ui/components/card/RequestCard.dart';
+import 'package:it_4788/src/ui/components/header2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   DateTime _selectedDate = DateTime.now();
   String? token;
+  String? classId;
   final AbsenceService _absenceService = AbsenceService();
 
   void _selectDate() async {
@@ -40,15 +42,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     setState(() {
       token = prefs.getString('token');
+      classId = prefs.getString('classId');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Thông báo'),
-        backgroundColor: const Color(0xFFFF5E5E),
+      backgroundColor: const Color(0xFFF5F5F5), // Màu nền sáng
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: const Header2(title: 'Thông tin chi tiết lớp'),
       ),
       body: Column(
         children: [
@@ -75,7 +79,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           FutureBuilder<List<Map<String, String>>>(
             future: _absenceService.fetchAbsenceRequests(
               token: token!,
-              classId: '000087',
+              classId: classId!,
               status: null,
               date: _selectedDate.toString().split(' ')[0],
             ),

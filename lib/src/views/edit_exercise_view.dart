@@ -1,28 +1,29 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Add this for file picker
-import 'package:intl/intl.dart'; // For formatting the date
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:it_4788/src/ui/components/header2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/exercise_service.dart';
 import 'package:fluttertoast/fluttertoast.dart'; // For showing toast messages
 
-class CreateExerciseView extends StatefulWidget {
-  const CreateExerciseView({Key? key}) : super(key: key);
+class EditExerciseView extends StatefulWidget {
+
+  const EditExerciseView({Key? key}) : super(key: key);
   @override
   _CreateExerciseViewState createState() => _CreateExerciseViewState();
 }
 
-class _CreateExerciseViewState extends State<CreateExerciseView> {
+class _CreateExerciseViewState extends State<EditExerciseView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Form fields
   String? _token;
   String? _classId;
-  String? _title;
   DateTime? _deadline;
   String? _description;
   File? _file;
+  int? _exerciseId;
 
   bool _loading = false;
 
@@ -40,6 +41,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
     setState(() {
       _token = prefs.getString('token');
       _classId = prefs.getString('classId');
+      _exerciseId = prefs.getInt('exerciseId');
     });
   }
 
@@ -63,16 +65,15 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
       });
 
       try {
-        if (_file != null && _token != null && _classId != null && _title != null && _deadline != null && _description != null) {
+        if (_file != null && _token != null && _classId != null && _deadline != null && _description != null) {
           String formattedDeadline = DateFormat('yyyy-MM-ddTHH:mm:ss').format(_deadline!);
 
-          var result = await _exerciseService.createExercise(
+          var result = await _exerciseService.editExercise(
             token: _token!,
-            classId: _classId!,
-            title: _title!,
             deadline: formattedDeadline,
             description: _description!,
             file: _file!,
+            assignmentId: _exerciseId!
           );
 
           if (result['success']) {
@@ -110,7 +111,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
-        child: const Header2(title: 'Tạo bài tập'),
+        child: const Header2(title: 'Sửa bài tập'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -118,11 +119,6 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Title'),
-                onSaved: (value) => _title = value,
-                validator: (value) => value!.isEmpty ? 'Title is required' : null,
-              ),
 
               TextFormField(
                 decoration: InputDecoration(labelText: 'Deadline'),
@@ -180,7 +176,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
 
               ElevatedButton(
                 onPressed: _loading ? null : _submitForm,
-                child: _loading ? CircularProgressIndicator() : Text('Create Exercise'),
+                child: _loading ? CircularProgressIndicator() : Text('Edit Exercise'),
               ),
             ],
           ),

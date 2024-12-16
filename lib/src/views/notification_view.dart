@@ -46,10 +46,51 @@ class _NotificationScreenState extends State<NotificationScreen> {
     });
   }
 
+  Future<void> _handleAccept(String requestId) async {
+    if (token != null && classId != null) {
+      bool success = await _absenceService.reviewAbsenceRequest(
+        token: token!,
+        requestId: requestId,
+        status: 'ACCEPTED',
+      );
+      print(requestId);
+      if (success) {
+        // Handle success, for example, show a snackbar or reload the list
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request accepted')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to accept request')),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleReject(String requestId) async {
+    if (token != null && classId != null) {
+      bool success = await _absenceService.reviewAbsenceRequest(
+        token: token!,
+        requestId: requestId,
+        status: 'REJECTED',
+      );
+      if (success) {
+        // Handle success, for example, show a snackbar or reload the list
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request rejected')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to reject request')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), // Màu nền sáng
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: const Header2(title: 'Thông tin chi tiết lớp'),
@@ -100,6 +141,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     return RequestCard(
                       date: notification['date'] ?? 'Unknown Date',
                       sender: notification['sender'] ?? 'Unknown Sender',
+                      onAccept: () => _handleAccept(notification['request_id']!),
+                      onReject: () => _handleReject(notification['request_id']!),
                     );
                   },
                 );

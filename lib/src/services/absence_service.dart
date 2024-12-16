@@ -66,4 +66,43 @@ class AbsenceService {
       return [];
     }
   }
+
+  Future<bool> reviewAbsenceRequest({
+    required String token,
+    required String requestId,
+    required String status, // ACCEPTED, PENDING, REJECTED
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/it5023e/review_absence_request'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'token': token,
+          'request_id': requestId,
+          'status': status,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(utf8.decode(response.bodyBytes));
+
+        // Check if the API response was successful
+        if (responseData['meta']['code'] == '1000') {
+          print('Absence request reviewed successfully');
+          return true;
+        } else {
+          print('Error: ${responseData['meta']['message']}');
+          return false;
+        }
+      } else {
+        print('Failed to review absence request');
+        return false;
+      }
+    } catch (e) {
+      print('Error during API request: $e');
+      return false;
+    }
+  }
 }

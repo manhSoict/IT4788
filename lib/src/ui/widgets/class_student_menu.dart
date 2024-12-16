@@ -17,7 +17,11 @@ class _ClassStMenuState extends State<ClassStMenu> {
     },
     {'title': 'Bài tập', 'icon': 'assets/icons/news.png'},
     {'title': 'Tài liệu', 'icon': 'assets/icons/news.png'},
-    {'title': 'Thông báo', 'icon': 'assets/icons/news.png'},
+    {
+      'title': 'Thông báo',
+      'icon': 'assets/icons/news.png',
+      'route': '/notification'
+    },
     {'title': 'Nhập điểm', 'icon': 'assets/icons/news.png'},
     {'title': 'Tin nhắn', 'icon': 'assets/icons/news.png'},
     {'title': 'Khảo sát', 'icon': 'assets/icons/news.png'},

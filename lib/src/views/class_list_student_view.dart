@@ -5,8 +5,6 @@ import 'package:it_4788/src/ui/components/footer.dart';
 import 'package:it_4788/src/ui/components/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../ui/components/card/RequestCard.dart';
-
 class ClassListStudentView extends StatefulWidget {
   const ClassListStudentView({Key? key}) : super(key: key);
 
@@ -23,7 +21,6 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
   int currentIndex = 0;
   bool _isStudentListActive = true;
   bool _isAttendanceActive = false;
-  bool _isNotificationActive = false;
   Map<String, String> _students = {};
   List<bool> _attendanceStatus = [];
   DateTime _selectedDate = DateTime.now();
@@ -73,7 +70,6 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
     setState(() {
       _isStudentListActive = index == 0;
       _isAttendanceActive = index == 1;
-      _isNotificationActive = index == 2;
     });
   }
 
@@ -93,19 +89,6 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
 
   void _saveAttendance() {
     print("Attendance submitted for the date: $_selectedDate");
-  }
-
-  void _filterStudents(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        // Reset to all students if query is empty
-      } else {
-        _students = Map.fromEntries(
-            _students.entries.where((entry) =>
-                entry.value.toLowerCase().contains(query.toLowerCase()))
-        );
-      }
-    });
   }
 
   Widget _buildStudentList() {
@@ -227,63 +210,6 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
     );
   }
 
-  Widget _buildNotificationView() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              const Text(
-                'Chọn ngày: ',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5E5E)),
-                onPressed: _selectDate,
-                child: Text(
-                  "${_selectedDate.toLocal()}".split(' ')[0],
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        ),
-        FutureBuilder<List<Map<String, String>>>(
-          future: _absenceService.fetchAbsenceRequests(
-            token: token!,  // Ensure the token is available
-            classId: '000087',  // Replace with your class ID
-            status: null,  // Replace with the appropriate status, if needed
-            date: _selectedDate.toString().split(' ')[0],  // Convert DateTime to string (YYYY-MM-DD format)
-          ),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No notifications found.'));
-            } else {
-              List<Map<String, String>> notifications = snapshot.data!;
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  var notification = notifications[index];
-                  return RequestCard(
-                    date: notification['date'] ?? 'Unknown Date',  // Safely extract the 'date' field
-                    sender: notification['sender'] ?? 'Unknown Sender',  // Safely extract the 'sender' field
-                  );
-                },
-              );
-            }
-          },
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -345,7 +271,6 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                   child: ElevatedButton(
                     onPressed: () => {
                       _isStudentListActive = true,
-                      _isNotificationActive = false,
                       _isAttendanceActive = false,
                       _toggleView(0)
                     },
@@ -369,43 +294,18 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
                   child: ElevatedButton(
                     onPressed: () => {
                       _isStudentListActive = false,
-                      _isNotificationActive = false,
                       _isAttendanceActive = true,
                       _toggleView(1)
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: !_isAttendanceActive
+                      backgroundColor: _isAttendanceActive
                           ? const Color(0xFFFF5E5E)
                           : Colors.grey[300],
                     ),
                     child: Text(
                       'Điểm danh',
                       style: TextStyle(
-                        color: !_isAttendanceActive
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => {
-                      _isStudentListActive = false,
-                      _isNotificationActive = true,
-                      _isAttendanceActive = false,
-                      _toggleView(2)
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: !_isNotificationActive
-                          ? const Color(0xFFFF5E5E)
-                          : Colors.grey[300],
-                    ),
-                    child: Text(
-                      'Thông báo',
-                      style: TextStyle(
-                        color: !_isNotificationActive
+                        color: _isAttendanceActive
                             ? Colors.white
                             : Colors.black,
                       ),
@@ -416,15 +316,18 @@ class _ClassListStudentViewState extends State<ClassListStudentView> {
             ),
           ),
           Expanded(
-            child: _isNotificationActive
-                ? _buildNotificationView()
-                : _isAttendanceActive
-                ? _buildAttendanceView()
-                : _buildStudentList(),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (_isStudentListActive) _buildStudentList(),
+                  if (_isAttendanceActive) _buildAttendanceView(),
+                ],
+              ),
+            ),
           ),
         ],
       ),
-      bottomNavigationBar: Footer(currentIndex: currentIndex),
+      bottomNavigationBar: Footer(currentIndex: currentIndex,),
     );
   }
 }

@@ -53,4 +53,50 @@ class ClassService {
       return {};
     }
   }
+
+  // Method to create a class
+  Future<Map<String, dynamic>> createClass({
+    required String token,
+    required String classId,
+    required String className,
+    required String classType, // LT, BT, LT_BT
+    required String startDate,
+    required String endDate,
+    required int maxStudentAmount,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/it5023e/create_class'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'token': token,
+          'class_id': classId,
+          'class_name': className,
+          'class_type': classType,
+          'start_date': startDate,
+          'end_date': endDate,
+          'max_student_amount': maxStudentAmount,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(utf8.decode(response.bodyBytes));
+
+        // Check if the API response was successful
+        if (responseData['meta']['code'] == '1000') {
+          return {'success': true, 'message': 'Class created successfully'};
+        } else {
+          return {'success': false, 'message': responseData['meta']['message']};
+        }
+      } else {
+        return {'success': false, 'message': 'Failed to create class'};
+      }
+    } catch (e) {
+      print('Error during API request: $e');
+      return {'success': false, 'message': 'Error during API request'};
+    }
+  }
+
 }

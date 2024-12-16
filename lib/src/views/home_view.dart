@@ -75,7 +75,7 @@ class _HomeViewState extends State<HomeView> {
       'title': 'Tiện ích',
       'subtitle': 'Sổ tay sinh viên, bản đồ',
       'icon': 'assets/icons/tool.png',
-      'route': '/utilities',
+      'route': '/create-class',
     },
     {
       'title': 'Biểu mẫu online',

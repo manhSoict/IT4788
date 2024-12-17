@@ -3,6 +3,7 @@ import 'package:it_4788/src/views/create_class_view.dart';
 import 'package:it_4788/src/views/create_exercise_view.dart';
 import 'package:path/path.dart';
 
+import '../views/absence_request_view.dart';
 import '../views/document_view.dart';
 import 'package:it_4788/src/views/edit_class_view.dart';
 import 'package:it_4788/src/views/edit_exercise_view.dart';
@@ -13,6 +14,7 @@ import 'package:it_4788/src/views/search_chat_view.dart';
 import '../views/listchat_view.dart';
 import '../views/login_view.dart';
 import '../views/home_view.dart';
+import '../views/register_class_view.dart';
 import '../views/setting_view.dart';
 import '../views/list_class_view.dart';
 import '../views/class_detail_view.dart';
@@ -39,6 +41,8 @@ class AppRoutes {
       '/searchchat': (context) => const SearchChat(),
       '/chatview': (context) => const ChatView(),
       '/lecturer-document': (context) => const DocumentTabScreen(),
+      '/register-class': (context) => const RegisterClassView(),
+      '/absence-request': (context) => const AbsenceRequestView(),
     };
   }
 }

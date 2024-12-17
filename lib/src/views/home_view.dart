@@ -57,19 +57,19 @@ class _HomeViewState extends State<HomeView> {
       'title': 'Bài tập',
       'subtitle': 'Bài tập của sinh viên',
       'icon': 'assets/icons/project.png',
-      'route': '/project',
+      'route': '/exercise',
     },
     {
       'title': 'Đăng kí lớp',
       'subtitle': 'Đăng kí vào lớp có trong học kì',
       'icon': 'assets/icons/enrollment.png',
-      'route': '/news',
+      'route': '/register-class',
     },
     {
       'title': 'Xin phép nghỉ học',
       'subtitle': 'Xin phép nghỉ học onlie',
       'icon': 'assets/icons/absent.png',
-      'route': '/class',
+      'route': '/absence-request',
     },
     {
       'title': 'Kết quả học tập',
@@ -78,8 +78,8 @@ class _HomeViewState extends State<HomeView> {
       'route': '/result',
     },
     {
-      'title': 'Tiện ích',
-      'subtitle': 'Sổ tay sinh viên, bản đồ',
+      'title': 'Tài liêu',
+      'subtitle': 'Tài liê học tập',
       'icon': 'assets/icons/tool.png',
       'route': '/lecturer-document',
     },

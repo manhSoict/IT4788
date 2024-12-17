@@ -11,7 +11,7 @@ class User {
   final String token;
   final String role;
   final String status;
-  final Image? avatar;
+  final String? avatar;
   final List<Class> classList;
 
   User({
@@ -45,5 +45,4 @@ class User {
       classList: classList,
     );
   }
-
 }

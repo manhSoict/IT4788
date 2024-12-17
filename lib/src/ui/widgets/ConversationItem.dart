@@ -6,7 +6,7 @@ class ConversationItem extends StatelessWidget {
   final String lastMessage;
   final String createdAt;
   final int unreadCount;
-  final Image? partnerImg;
+  final String? partnerImg;
   final VoidCallback? onTap; // Sự kiện khi nhấn vào mục
 
   const ConversationItem({
@@ -26,7 +26,7 @@ class ConversationItem extends StatelessWidget {
       onTap: onTap, // Kích hoạt sự kiện khi nhấn vào mục
       leading: CircleAvatar(
         backgroundColor: Colors.grey.shade300,
-        backgroundImage: partnerImg?.image,
+        backgroundImage: partnerImg != null ? NetworkImage(partnerImg!) : null,
         child:
             partnerImg == null ? Icon(Icons.person, color: Colors.white) : null,
       ),
@@ -43,10 +43,10 @@ class ConversationItem extends StatelessWidget {
           ? CircleAvatar(
               backgroundColor: Colors.red,
               radius: 10,
-              child: Text(
-                unreadCount.toString(),
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
+              // child: Text(
+                  // unreadCount.toString(),
+                  // style: const TextStyle(color: Colors.white, fontSize: 12),
+                  // ),
             )
           : null,
     );

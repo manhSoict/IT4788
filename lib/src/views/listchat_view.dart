@@ -44,23 +44,6 @@ class _ListChatState extends State<ListChat> {
     }
   }
 
-  // void _showConversationDetails(String partnerId, String conversationId) {
-  //   //Hiển thị đối thoại thông báo partnerId và conversation
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: Text('Thông tin Hội Thoại'),
-  //       content: Text('Partner ID: $partnerId\nLast Message: $conversationId'),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.of(context).pop(),
-  //           child: const Text('Đóng'),
-  //         ),
-  //       ],
-  //     ),
-
-  // }
-
   @override
   Widget build(BuildContext context) {
     var currentIndex = 1;
@@ -70,7 +53,6 @@ class _ListChatState extends State<ListChat> {
       ),
       body: Stack(
         children: [
-          // ListView hiển thị danh sách các cuộc trò chuyện
           ListView.builder(
             itemCount: conversations.length,
             itemBuilder: (context, index) {
@@ -82,6 +64,7 @@ class _ListChatState extends State<ListChat> {
               final createdAt = conversation['last_message']['created_at'];
               final unreadCount = conversation['last_message']['unread'];
               final partnerImg = conversation['partner']['avatar'];
+              print(partnerImg);
 
               return ConversationItem(
                 partnerId: partnerId,
@@ -99,15 +82,12 @@ class _ListChatState extends State<ListChat> {
               );
             },
           ),
-
-          // Nút NewChatButton ở góc phải dưới
           Positioned(
-            bottom: 16.0, // Khoảng cách từ cạnh dưới
-            right: 16.0, // Khoảng cách từ cạnh phải
+            bottom: 16.0,
+            right: 16.0,
             child: NewChatButton(
-              assetIconPath: 'assets/icons/edit.png', // Thay đường dẫn icon
+              assetIconPath: 'assets/icons/edit.png',
               onTap: () {
-                // Xử lý sự kiện nhấn nút
                 Navigator.pushNamed(context, '/searchchat');
               },
             ),

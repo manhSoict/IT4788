@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:it_4788/src/views/chat_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_seach.dart'; // Import file model User
 
 class SearchChat extends StatefulWidget {
   const SearchChat({Key? key}) : super(key: key);
+
   @override
   _SearchChatState createState() => _SearchChatState();
 }
@@ -16,8 +18,7 @@ class _SearchChatState extends State<SearchChat> {
   TextEditingController searchController = TextEditingController();
 
   Future<void> fetchUsers(String query) async {
-    final url = Uri.parse(
-        "http://157.66.24.126:8080/it5023e/search_account"); // Thay bằng URL API thực tế
+    final url = Uri.parse("http://157.66.24.126:8080/it5023e/search_account");
     final body = jsonEncode({
       "search": query,
       "pageable_request": {"page": "0", "page_size": "20"}
@@ -93,9 +94,8 @@ class _SearchChatState extends State<SearchChat> {
                       Text("${user.firstName} ${user.lastName}"), // Tên đầy đủ
                   subtitle: Text(user.email), // Email của người dùng
                   onTap: () {
-                    _clckConversation(user.accountId);
-                    // print(
-                    // "${user.firstName} ${user.lastName} có id là ${user.accountId}");
+                    _clickConversation(user
+                        .accountId); // Tìm và lưu conversationId khi người dùng chọn
                   },
                 );
               },
@@ -111,22 +111,26 @@ class _SearchChatState extends State<SearchChat> {
     searchController.dispose();
     super.dispose();
   }
-}
 
-void _clckConversation(String accountId) async {
-  // final email = _emailController.text.trim();
-  // final password = _passwordController.text;
+  // Hàm gọi fetchfindConversationId và lưu conversationId vào SharedPreferences
+  void _clickConversation(String accountId) async {
+    print(accountId);
+    await fetchfindConversationId(accountId); // Gọi hàm tìm conversationId
 
-  // if (email.isEmpty || password.isEmpty) {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(content: Text('Please enter all fields')),
-  //   );
-  //   return;
-  // }
+    // Sau khi tìm và lưu conversationId, bạn có thể điều hướng đến màn hình ChatView hoặc làm gì đó khác
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatView(), // Màn hình ChatView, ví dụ
+      ),
+    );
+  }
 
+  // Hàm fetchfindConversationId
   Future<void> fetchfindConversationId(String partnerId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
+    print(token);
     const String url =
         'http://157.66.24.126:8080/it5023e/get_list_conversation';
 
@@ -144,10 +148,14 @@ void _clckConversation(String accountId) async {
 
       // Tìm conversationId dựa trên partnerId
       for (var conversation in conversations) {
+        print(conversation['partner']['id'].toString());
         if (conversation['partner']['id'].toString() == partnerId) {
-          conversationId = conversation['id'];
-          print(conversationId);
+          conversationId = conversation['id'].toString();
+          print("Found conversationId: $conversationId");
           break;
+        } else {
+          print("tìm ko thấy");
+          print(conversationId);
         }
       }
     } else {

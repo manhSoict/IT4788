@@ -49,7 +49,9 @@ class _ChatViewState extends State<ChatView> {
   String? partnerName;
   String? partnerImg;
 
-  Future<void> fetchInfoPartner(String token, String userId) async {
+  Future<void> fetchInfoPartner(String token, String partnerId) async {
+    print("id được truyền vào là");
+    print(partnerId);
     const String url = "http://157.66.24.126:8080/it4788/get_user_info";
 
     try {
@@ -58,7 +60,7 @@ class _ChatViewState extends State<ChatView> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "token": token,
-          "user_id": userId,
+          "user_id": partnerId,
         }),
       );
 
@@ -68,6 +70,8 @@ class _ChatViewState extends State<ChatView> {
           final userInfo = data['data'];
           setState(() {
             partnerName = userInfo['name'];
+            print("lấy họ tên thành công");
+            print(partnerName);
             partnerImg = userInfo['avatar'];
           });
         } else {
@@ -98,7 +102,6 @@ class _ChatViewState extends State<ChatView> {
           "token": token,
           "index": "0",
           "count": "40",
-          "partner_id": partnerId,
           "conversation_id": conversationId,
           "mark_as_read": "true",
         }),

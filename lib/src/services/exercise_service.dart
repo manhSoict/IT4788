@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 
 class ExerciseService {
-  static const String baseUrl = 'http://157.66.24.126:8080'; // Update base URL if needed
+  static const String baseUrl =
+      'http://157.66.24.126:8080'; // Update base URL if needed
 
   // Create Exercise
   Future<Map<String, dynamic>> createExercise({
@@ -102,7 +103,7 @@ class ExerciseService {
       // Add file and fields
       request.files.add(await http.MultipartFile.fromPath('file', file.path));
       request.fields['token'] = token;
-      request.fields['survey_id'] = assignmentId as String;
+      request.fields['assignmentId'] = assignmentId as String;
       request.fields['deadline'] = deadline;
       request.fields['description'] = description;
 

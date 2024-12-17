@@ -73,7 +73,7 @@ class Header extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.notifications, color: Colors.white),
                 onPressed: () {
-                  // Xử lý thông báo
+                  Navigator.pushNamed(context, '/notify');
                 },
               ),
             ]
